@@ -8,14 +8,14 @@
           class="demo-ruleForm"
         >
           <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入账号" el-icon-mobile class="input">
+            <el-input v-model="input" placeholder="请输入账号" el-icon-mobile>
               <template #prefix>
                 <i class="iconfont icon-shouji_o" />
               </template>
             </el-input>
           </el-form-item>
           <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入密码" el-icon-mobile class="input">
+            <el-input v-model="input" placeholder="请输入密码" el-icon-mobile>
               <template #prefix>
                 <i class="iconfont icon-suo" />
               </template>
@@ -26,7 +26,7 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入验证码" el-icon-mobile class="input">
+            <el-input v-model="input" placeholder="请输入验证码" el-icon-mobile>
               <template #prefix>
                 <i class="iconfont icon-dunpai-" />
               </template>
@@ -99,9 +99,9 @@ export default {
       text-shadow: 0 7px 22px #cfcfcf;
     }
   }
-  .input {
-    width: 450px;
+  ::v-deep.el-input__inner {
     height: 50px;
+    width: 450px;
   }
 }
 </style>
