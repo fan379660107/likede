@@ -2,42 +2,65 @@
   <div id="app">
     <div class="login-container">
       <div class="login-form">
-        <img src="./img/login.png" class="login-logo">
+        <img src="./img/login.png" class="login-logo" />
         <el-form
+          ref="loginForm"
           label-width="auto"
           class="demo-ruleForm"
+          :model="loginForm"
+          :rules="loginFormRules"
         >
-          <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入账号" el-icon-mobile>
+          <!-- 表单区域 -->
+          <el-form-item prop="loginName">
+            <el-input
+              v-model="loginForm.loginName"
+              placeholder="请输入账号"
+              el-icon-mobile
+            >
               <template #prefix>
                 <i class="iconfont icon-shouji_o" />
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入密码" el-icon-mobile>
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              placeholder="请输入密码"
+              el-icon-mobile
+              :type="passwordType"
+            >
               <template #prefix>
                 <i class="iconfont icon-suo" />
               </template>
               <template #suffix>
-                <i v-if="CloseEyes" class="iconfont icon-guanbi-yanjing" />
-                <i v-else class="iconfont icon-yanjing" />
+                <span @click="clearFn">
+                  <i
+                    v-if="CloseEyes"
+                    class="iconfont icon-guanbi-yanjing yanjing"
+                  />
+                  <i v-else class="iconfont icon-yanjing yanjing" />
+                </span>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item prop="pass">
-            <el-input v-model="input" placeholder="请输入验证码" el-icon-mobile>
+          <el-form-item prop="code">
+            <el-input
+              v-model="loginForm.code"
+              placeholder="请输入验证码"
+              el-icon-mobile
+            >
               <template #prefix>
                 <i class="iconfont icon-dunpai-" />
+              </template>
+              <template #suffix>
+                <img :src="imgBanner" class="imgclass" @click="imgFn" />
               </template>
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="submitForm"
-            >登录</el-button>
+            <el-button type="primary" @click="submitForm">登录</el-button>
           </el-form-item>
+          <!-- 表单区域 -->
         </el-form>
       </div>
     </div>
@@ -45,19 +68,72 @@
 </template>
 
 <script>
+import { code, login } from "@/api/user";
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("user");
 export default {
   data() {
     return {
-      input: '',
-      CloseEyes: true
-    }
+      loginForm: {
+        loginName: "admin",
+        password: "admin",
+        code: "",
+        loginType: 0,
+        clientToken: "",
+      },
+      loginFormRules: {
+        loginName: [
+          { required: true, message: "请输入账号", trigger: "blur" },
+          {
+            pattern: /^[a-zA-Z]+$/,
+            message: "账号格式不正确",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            pattern: /^[a-zA-Z]+$/,
+            message: "密码格式不正确",
+            trigger: "blur",
+          },
+        ],
+        code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
+      },
+      CloseEyes: true, // 切换闭眼睁眼变量
+      passwordType: "password", // input 类型切换变量
+      imgBanner: "", // 验证码图片
+    };
+  },
+  created() {
+    this.imgFn();
   },
   methods: {
-    submitForm() {
-
-    }
-  }
-}
+    //登录
+    async submitForm() {
+      try {
+        await this.$refs.loginForm.validate();
+        this.$store.dispatch("user/getToken", this.loginForm);
+        // this.$router.push("/");
+      } catch (error) {}
+    },
+    //验证码
+    async imgFn() {
+      this.loginForm.clientToken = Math.random() * 10;
+      const { data } = await code(this.loginForm.clientToken);
+      this.imgBanner = URL.createObjectURL(data);
+    },
+    //登录表单眼睛闭合
+    clearFn() {
+      this.CloseEyes = !this.CloseEyes;
+      this.passwordType =
+        this.passwordType === "password" ? "text" : "password";
+    },
+  },
+  computed: {
+    ...mapState(["user"]),
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -98,10 +174,43 @@ export default {
       color: #fff;
       text-shadow: 0 7px 22px #cfcfcf;
     }
+    ::v-deep.el-input__prefix {
+      text-align: center;
+      left: 5px;
+      margin-top: 5px;
+      width: 20px;
+      .icon-shouji_o {
+        font-size: 27px;
+        text-align: center;
+      }
+      .icon-suo {
+        font-size: 20px;
+      }
+      .icon-dunpai- {
+        font-size: 20px;
+      }
+    }
+    ::v-deep.el-input__suffix {
+      right: 10px;
+      margin-top: 8px;
+      .yanjing {
+        font-size: 16px;
+      }
+    }
+    .imgclass {
+      position: absolute;
+      top: -7px;
+      right: -11px;
+      width: 125px;
+      height: 48px;
+      background-color: #fff;
+      border-right: 1px solid #c6c6c6;
+    }
   }
   ::v-deep.el-input__inner {
     height: 50px;
     width: 450px;
+    text-indent: 8px;
   }
 }
 </style>
