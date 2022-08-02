@@ -16,6 +16,7 @@
               v-model="loginForm.loginName"
               placeholder="请输入账号"
               el-icon-mobile
+              @keydown.enter.native="submitForm"
             >
               <template #prefix>
                 <i class="iconfont icon-shouji_o" />
@@ -28,6 +29,7 @@
               placeholder="请输入密码"
               el-icon-mobile
               :type="passwordType"
+              @keydown.enter.native="submitForm"
             >
               <template #prefix>
                 <i class="iconfont icon-suo" />
@@ -48,6 +50,7 @@
               v-model="loginForm.code"
               placeholder="请输入验证码"
               el-icon-mobile
+              @keydown.enter.native="submitForm"
             >
               <template #prefix>
                 <i class="iconfont icon-dunpai-" />
@@ -58,7 +61,9 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm">登录</el-button>
+            <el-button type="primary" @click="submitForm" :loading="isloading"
+              >登录</el-button
+            >
           </el-form-item>
           <!-- 表单区域 -->
         </el-form>
@@ -68,9 +73,7 @@
 </template>
 
 <script>
-import { code, login } from "@/api/user";
-import { createNamespacedHelpers } from "vuex";
-const { mapState } = createNamespacedHelpers("user");
+import { code } from "@/api/user";
 export default {
   data() {
     return {
@@ -103,6 +106,8 @@ export default {
       CloseEyes: true, // 切换闭眼睁眼变量
       passwordType: "password", // input 类型切换变量
       imgBanner: "", // 验证码图片
+      timer: null, //节流阀
+      isloading: false, //loading事件
     };
   },
   created() {
@@ -111,17 +116,25 @@ export default {
   methods: {
     //登录
     async submitForm() {
+      this.isloading = true;
       try {
         await this.$refs.loginForm.validate();
-        this.$store.dispatch("user/getToken", this.loginForm);
-        // this.$router.push("/");
-      } catch (error) {}
+        await this.$store.dispatch("user/getToken", this.loginForm);
+        this.$router.push("/");
+        this.$message.success("登录成功");
+      } finally {
+        this.isloading = false;
+      }
     },
     //验证码
     async imgFn() {
-      this.loginForm.clientToken = Math.random() * 10;
-      const { data } = await code(this.loginForm.clientToken);
-      this.imgBanner = URL.createObjectURL(data);
+      if (this.timer) return;
+      this.timer = setTimeout(async () => {
+        this.loginForm.clientToken = Math.random() * 10;
+        const { data } = await code(this.loginForm.clientToken);
+        this.imgBanner = URL.createObjectURL(data);
+        this.timer = null;
+      }, 1000);
     },
     //登录表单眼睛闭合
     clearFn() {
@@ -129,9 +142,6 @@ export default {
       this.passwordType =
         this.passwordType === "password" ? "text" : "password";
     },
-  },
-  computed: {
-    ...mapState(["user"]),
   },
 };
 </script>

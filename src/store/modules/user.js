@@ -1,5 +1,4 @@
 import { login } from "@/api/user";
-import router from "@/router";
 export default {
   namespaced: true,
   state: {
@@ -12,13 +11,9 @@ export default {
   },
   actions: {
     async getToken(context, payload) {
-      const { data } = await login(payload);
-      context.commit("setToken", data.token);
-      if (data.success) {
-        router.push("/");
-      } else {
-        alert(data.msg);
-      }
+      const res = await login(payload);
+      // console.log(res);
+      context.commit("setToken", res.token);
     },
   },
 };
