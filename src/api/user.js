@@ -21,3 +21,8 @@ export const code = (clientToken) =>
     url: `/api/user-service/user/imageCode/${clientToken}`,
     responseType: "blob",
   });
+
+export const getUserInfoApi = (id) =>
+  request({
+    url: `/api/user-service/user/${id}`,
+  });
