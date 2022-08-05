@@ -1,14 +1,14 @@
 import Vue from "vue";
 import Router from "vue-router";
 // 引入多个模块的规则
-import approvalsRouter from "./modules/approvals";
-import departmentsRouter from "./modules/departments";
-import employeesRouter from "./modules/employees";
-import permissionRouter from "./modules/permission";
-import attendancesRouter from "./modules/attendances";
-import salarysRouter from "./modules/salarys";
-import settingRouter from "./modules/setting";
-import socialRouter from "./modules/social";
+import workManagementRouter from "./modules/workManagement";
+import pointManagementRouter from "./modules/pointManagement";
+import equipmentManagementRouter from "./modules/equipmentManagement";
+import personnelManagementRouter from "./modules/personnelManagement";
+import goodsManagementRouter from "./modules/goodsManagement";
+import strategyRouter from "./modules/strategy";
+import goodsOrderRouter from "./modules/goodsOrder";
+import reconciliationStatisticalRouter from "./modules/reconciliationStatistical";
 Vue.use(Router);
 
 /* Layout */
@@ -61,7 +61,7 @@ export const constantRoutes = [
         path: "dashboard",
         name: "Dashboard",
         component: () => import("@/views/dashboard/index"),
-        meta: { title: "Dashboard", icon: "dashboard" },
+        meta: { title: "帝可得", icon: "帝可得" },
       },
     ],
   },
@@ -71,14 +71,14 @@ export const constantRoutes = [
 ];
 // 动态路由
 const asyncRouters = [
-  approvalsRouter,
-  departmentsRouter,
-  employeesRouter,
-  permissionRouter,
-  attendancesRouter,
-  salarysRouter,
-  settingRouter,
-  socialRouter,
+  workManagementRouter,
+  pointManagementRouter,
+  equipmentManagementRouter,
+  personnelManagementRouter,
+  goodsManagementRouter,
+  strategyRouter,
+  goodsOrderRouter,
+  reconciliationStatisticalRouter,
 ];
 const createRouter = () =>
   new Router({
